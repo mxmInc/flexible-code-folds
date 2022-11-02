@@ -2,19 +2,17 @@ import * as vscode from 'vscode';
 
 let KINDS_TO_FOLD = [vscode.SymbolKind.Method, vscode.SymbolKind.Property, vscode.SymbolKind.Constructor, vscode.SymbolKind.Function, vscode.SymbolKind.Operator];
 let KINDS_TO_FOLD_CLASSES = [vscode.SymbolKind.Class, vscode.SymbolKind.Interface];
+const outputChannel = vscode.window.createOutputChannel("flexible-code-folder")
 
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('extension.fold_to_definitions', foldToDefinitions));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.fold_to_class_definitions', foldToClassDefinitions));
+	context.subscriptions.push(vscode.commands.registerCommand('extension.flexibleFoldNow', flexibleFoldNow));
+	
 }
-
+//ttbirlx2ykm33yscgkykhumi7pvs3yg3bgkbmu65nhg7sb7wefeq
 export function deactivate() {}
 
-function foldToClassDefinitions() {
-	foldToDefinitions(true);
-}
 
-function foldToDefinitions(classes: boolean = false) {
+function flexibleFoldNow(classes: boolean = true) {
 	const activeEditor = vscode.window.activeTextEditor;
 
 	if (activeEditor === undefined) {
@@ -29,29 +27,30 @@ function foldToDefinitions(classes: boolean = false) {
 				return;
 			}
 
-			let allSymbols: vscode.DocumentSymbol[] = [];
-			populateAllSymbols(symbols, allSymbols);
+			let symbolsToFold: vscode.DocumentSymbol[] = [];
+			populateAllSymbols(symbols, symbolsToFold);
 
 			let kinds = KINDS_TO_FOLD;
 			if (classes) {
 				kinds = kinds.concat(KINDS_TO_FOLD_CLASSES);
 			}
 
-			allSymbols = allSymbols.filter(symbol => {
+			symbolsToFold = symbolsToFold.filter(symbol => {
 				return kinds.includes(symbol.kind);
 			});
 
-			allSymbols = allSymbols.filter(symbol => {
+			symbolsToFold = symbolsToFold.filter(symbol => {
 				return !symbol.range.isSingleLine;
 			});
 
-			//allSymbols.sort((a, b) => {
-			//	return b.range.start.line - a.range.start.line;
-			//});
+			const exclusedSymbolPrefixes = (vscode.workspace.getConfiguration("flexibleCodeFolder").get("preventFoldingThesePrefixes") as string).split(",")
 
-			//console.log("allSymbols", symbols);
+			symbolsToFold = symbolsToFold.filter(symbol=>{
+				return  !exclusedSymbolPrefixes.some((val)=>symbol.name.startsWith(val) ) 
 
-			actuallyFold(activeEditor, allSymbols);
+			})
+
+			actuallyFold(activeEditor, symbolsToFold);
 		}
 	);
 }
@@ -75,5 +74,7 @@ async function actuallyFold(activeEditor: vscode.TextEditor, symbols: vscode.Doc
 		lines.push(symbol.selectionRange.start.line);
 	}
 
+	outputChannel.appendLine(`folding ${lines.join(",")}`)
 	await vscode.commands.executeCommand("editor.fold", {selectionLines: lines});
+	outputChannel.append(`... done`)
 }

@@ -1,9 +1,9 @@
 {
-	"name": "fold-to-definitions",
-	"displayName": "Fold To Definitions",
-	"description": "Fold all the functions and methods (and classes, too) but nothing else.",
-	"publisher": "zeevro",
-	"repository": "https://github.com/zeevro/vscode-fold-to-definitions",
+	"name": "flexible-code-folds",
+	"displayName": "Flexible Code Folder",
+	"description": "Fold all the by symbole kinds and symbol name prefixes",
+	"publisher": "mxmInc",
+	"repository": "https://github.com/mxmInc/flexible-code-folds",
 	"version": "0.5.6",
 	"engines": {
 		"vscode": "^1.31.0"
@@ -12,32 +12,31 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.fold_to_definitions",
-		"onCommand:extension.fold_to_class_definitions"
+		"onCommand:extension.flexibleFoldNow"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.fold_to_definitions",
-				"title": "Fold to definitions"
-			},
-			{
-				"command": "extension.fold_to_class_definitions",
-				"title": "Fold to class definitions"
+				"command": "extension.flexibleFoldNow",
+				"title": "Flexibily Fold Now"
 			}
 		],
+		"configuration": {
+			"title": "Flexible Code Folder",
+			"properties": {
+				"flexibleCodeFolder.preventFoldingThesePrefixes": {
+					"type": "string",
+					"default": "",
+					"description": "Comma-seperated list of prefix strings of symbols that should not be folded"
+				}
+			}
+		},
 		"keybindings": [
 			{
-				"command": "extension.fold_to_definitions",
-				"key": "ctrl+k k",
-				"mac": "cmd+k k",
-				"when": "editorTextFocus"
-			},
-			{
-				"command": "extension.fold_to_class_definitions",
-				"key": "ctrl+k l",
-				"mac": "cmd+k l",
+				"command": "extension.flexibleFoldNow",
+				"key": "ctrl+l ctrl+k",
+				"mac": "cmd+l cmd+l",
 				"when": "editorTextFocus"
 			}
 		]
@@ -47,13 +46,16 @@
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run compile && node ./node_modules/vscode/bin/test"
+		"test": "npm run compile && node ./node_modules/vscode/bin/test",
+		"package": "vsce package --out dist/",
+		"publish": "vsce publish"
 	},
 	"devDependencies": {
-		"typescript": "^3.3.1",
-		"vscode": "^1.1.28",
-		"tslint": "^5.12.1",
+		"@types/mocha": "^2.2.42",
 		"@types/node": "^10.12.21",
-		"@types/mocha": "^2.2.42"
+		"tslint": "^5.12.1",
+		"typescript": "^3.3.1",
+		"vsce": "^2.13.0",
+		"vscode": "^1.1.37"
 	}
 }
