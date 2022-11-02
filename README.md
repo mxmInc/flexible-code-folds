@@ -1,10 +1,13 @@
 # Fold to Definitions README
 
-This extension allows you to fold all class/function/method definitions without folding the if/for/while/try/etc. blocks inside.
+This extension is a fork from https://github.com/zeevro/vscode-fold-to-definitions
+
+This folds source code based on the following symbolKinds (avoiding those symbols starting with prefixes confgured in the settings)
 
 ## Features
 
-Just the description. Not much here yet. This is mainly for my own use.
+  - Avoids folding  the Symbolkinds [vscode.SymbolKind.Method, vscode.SymbolKind.Property, vscode.SymbolKind.Constructor, vscode.SymbolKind.Function, vscode.SymbolKind.Operator,vscode.SymbolKind.Class, vscode.SymbolKind.Interface];
+  - Also, avoids folding the from amongst the rest - those with symbols starting with the list of prefixes given in the configuration setting
 
 ## Requirements
 
@@ -25,3 +28,9 @@ First version. WOO!
 ### 0.5.1
 
 Initial release
+
+### 0.6.0
+
+  - renamed to `Flexible Code Folder`
+  - added configuration `flexibleCodeFolder.preventFoldingThesePrefixes`
+  - added command `flexibleFoldNow`
